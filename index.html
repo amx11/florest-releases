@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forest Platform</title>
+<meta name="description" content="Forest Platform — centro de comando de incêndio florestal. Focos por satélite, risco FWI e clima próprio, direto no navegador.">
+<style>
+  :root { --bg:#07110d; --card:#0d1b15; --borda:#1d3a2c; --texto:#e8f1ec; --mudo:#9bb3a6; --verde:#34d399; --verde2:#10b981; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; display:grid; place-items:center; padding:16px;
+         background:radial-gradient(1000px 520px at 75% -10%, #12352a 0%, var(--bg) 60%); color:var(--texto);
+         font:15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .card { width:100%; max-width:440px; background:var(--card); border:1px solid var(--borda); border-radius:18px; padding:28px; text-align:center; }
+  .logo { width:52px; height:52px; margin:0 auto 14px; border-radius:14px; display:grid; place-items:center; font-weight:800; font-size:22px;
+          background:linear-gradient(135deg,var(--verde2),#065f46); color:#04110b; }
+  h1 { font-size:21px; margin:0 0 4px; } p { color:var(--mudo); margin:0 0 20px; }
+  .barra { height:4px; border-radius:4px; background:#12261d; overflow:hidden; margin-bottom:20px; }
+  .barra i { display:block; height:100%; width:40%; background:var(--verde); animation:corre 1.2s ease-in-out infinite; }
+  @keyframes corre { from { transform:translateX(-100%); } to { transform:translateX(260%); } }
+  a.botao { display:inline-block; padding:12px 22px; border-radius:11px; font-weight:700; text-decoration:none;
+            background:linear-gradient(135deg,var(--verde),var(--verde2)); color:#04110b; }
+  .oculto { display:none; } small { display:block; margin-top:18px; color:var(--mudo); font-size:12px; }
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="logo">F</div>
+  <h1>Forest Platform</h1>
+  <p id="msg">Abrindo o centro de comando…</p>
+  <div class="barra" id="barra"><i></i></div>
+  <a class="botao oculto" id="botao" href="#">Abrir o Forest</a>
+  <small>Centro de comando de incêndio florestal · avaliação online de 30 dias</small>
+</main>
+<script>
+  // O endereço do servidor muda (túnel); este arquivo fica fixo e lê o atual de link.json.
+  (async function () {
+    var msg = document.getElementById('msg'), botao = document.getElementById('botao'), barra = document.getElementById('barra');
+    try {
+      var r = await fetch('link.json?t=' + Date.now(), { cache: 'no-store' });
+      var d = await r.json();
+      if (!d || !/^https:\/\//.test(d.url)) throw new Error('link inválido');
+      botao.href = d.url;
+      botao.classList.remove('oculto');
+      location.replace(d.url);
+    } catch (e) {
+      barra.classList.add('oculto');
+      msg.textContent = 'O Forest está em manutenção. Tente de novo em alguns minutos.';
+    }
+  })();
+</script>
+</body>
+</html>
